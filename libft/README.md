@@ -1,3 +1,4 @@
+```c
 /* ************************************************/
 /*                                                */
 /*   File:    README.md                           */
@@ -85,4 +86,5 @@ Essential for future projects.
 2.  **Protect Every Malloc:** If `malloc` returns `NULL`, your function should return `NULL` (or handle it) immediately. Never assume memory was granted.
 3.  **The "Norm" is Law:** Use the Norminette tool constantly. A single space in the wrong place or a function over 25 lines is an automatic failure.
 
+```
 ---

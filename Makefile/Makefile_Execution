@@ -1,0 +1,539 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile_Execution                                 :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: zorwa <zorwa@student.42vienna.com>         +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2026/04/18 12:25:51 by zorwa             #+#    #+#              #
+#    Updated: 2026/04/18 12:29:46 by zorwa            ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+
+# 🧠 Makefile Execution — Story Mode (How `make` thinks)
+
+---
+
+## 🎬 The Story Begins
+
+You type:
+
+```bash
+make
+```
+
+👉 The program (make) starts thinking like this:
+
+---
+
+## 🧩 Step 1 — Start from `all`
+
+```make
+all: $(NAME)
+```
+
+### 🧠 Story
+
+👉 “My first task is `all`
+👉 To complete `all`, I need: `libft.a`”
+
+---
+
+## 🧩 Step 2 — Do I have `libft.a`?
+
+```make
+$(NAME): $(OBJS)
+	ar rcs $(NAME) $(OBJS)
+```
+
+### 🧠 Story
+
+👉 “Do I already have `libft.a`?”
+
+* ✔ YES and up-to-date → **do nothing ✅**
+* ❌ NO → “I must build it!”
+
+👉 “To build `libft.a`, I need `.o` files”
+
+---
+
+## 🧩 Step 3 — Do I have `.o` files?
+
+```make
+OBJS = $(SRCS:.c=.o)
+```
+
+### 🧠 Story
+
+👉 “Do I have all `.o` files?”
+
+* ✔ YES and up-to-date → “Good, I can archive them”
+* ❌ NO → “I must create them”
+
+---
+
+## 🧩 Step 4 — Build `.o` from `.c`
+
+```make
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+```
+
+### 🧠 Story
+
+👉 “To build `.o`, I need `.c`”
+
+👉 “Let me compile each file”
+
+```bash
+cc -Wall -Wextra -Werror -c file.c -o file.o
+```
+
+---
+
+## 🧩 Step 5 — Create the library
+
+```make
+ar rcs $(NAME) $(OBJS)
+```
+
+### 🧠 Story
+
+👉 “Now I have all `.o` files”
+
+👉 “I will pack them into one file”
+
+```bash
+ar rcs libft.a file1.o file2.o ...
+```
+
+👉 🎉 `libft.a` created!
+
+---
+
+# 🔁 Full Story Summary
+
+👉 Make thinks like this:
+
+```text
+Do I need libft.a?
+ ├── YES → do nothing
+ └── NO
+      ↓
+Do I have .o files?
+ ├── YES → archive them → libft.a
+ └── NO
+      ↓
+Compile .c → .o
+      ↓
+Archive → libft.a
+```
+
+---
+
+# 📊 Diagram (Visual Flow)
+
+```text
+          make
+            ↓
+         [all]
+            ↓
+      need libft.a?
+        /       \
+     yes         no
+     ↓           ↓
+   STOP      need .o files?
+                /       \
+             yes         no
+             ↓           ↓
+        ar rcs .a     compile .c → .o
+             ↓           ↓
+         libft.a ←───────┘
+```
+
+---
+
+# 🧠 Memory Trick (Never Forget)
+
+👉 **“make builds only what’s missing”**
+
+👉 Chain:
+
+```text
+.c → .o → .a
+```
+
+---
+
+# 🎯 Final Mental Image
+
+👉 Make is like a **lazy worker**:
+
+* “If everything is ready → I do nothing 😎”
+* “If something is missing → I build only that part 🔧”
+
+---
+
+Perfect 🔥 let’s continue the same **story style** for `clean`, `fclean`, `re`.
+
+---
+
+# 🧹 Makefile — Cleaning Rules (Story Mode)
+
+---
+
+## 🎬 You type:
+
+```bash
+make clean
+```
+
+---
+
+## 🧩 Rule
+
+```make
+clean:
+	rm -f $(OBJS)
+```
+
+### 🧠 Story
+
+👉 Make says:
+
+> “You don’t want compiled parts anymore?
+> Fine… I will delete all `.o` files”
+
+👉 It does:
+
+```bash
+rm -f file1.o file2.o ...
+```
+
+---
+
+### 🎯 Result
+
+```text
+.c files  → still exist ✔
+.o files  → deleted ❌
+libft.a   → still exists ✔
+```
+
+---
+
+## 🧠 Memory
+
+👉 *clean = remove intermediate files*
+
+---
+
+# 💣 `fclean` — Full Clean
+
+---
+
+## 🎬 You type:
+
+```bash
+make fclean
+```
+
+---
+
+## 🧩 Rule
+
+```make
+fclean: clean
+	rm -f $(NAME)
+```
+
+---
+
+### 🧠 Story
+
+👉 Make says:
+
+> “First, I will do `clean`
+> Then I will also delete the final product”
+
+---
+
+### Step-by-step:
+
+1. Run `clean`
+
+```bash
+rm -f *.o
+```
+
+2. Then:
+
+```bash
+rm -f libft.a
+```
+
+---
+
+### 🎯 Result
+
+```text
+.c files  → still exist ✔
+.o files  → deleted ❌
+libft.a   → deleted ❌
+```
+
+---
+
+## 🧠 Memory
+
+👉 *fclean = full clean (everything except source)*
+
+---
+
+# 🔄 `re` — Rebuild Everything
+
+---
+
+## 🎬 You type:
+
+```bash
+make re
+```
+
+---
+
+## 🧩 Rule
+
+```make
+re: fclean all
+```
+
+---
+
+### 🧠 Story
+
+👉 Make says:
+
+> “Destroy everything… then rebuild from scratch”
+
+---
+
+### Step-by-step:
+
+1. Run `fclean`
+
+```bash
+rm -f *.o
+rm -f libft.a
+```
+
+2. Then run `all`
+
+```bash
+make
+```
+
+👉 which triggers full build again
+
+---
+
+### 🎯 Result
+
+```text
+fresh compilation ✔
+fresh libft.a ✔
+```
+
+---
+
+## 🧠 Memory
+
+👉 *re = reset + rebuild*
+
+---
+
+# 📊 Full Cleaning Flow Diagram
+
+```text
+make clean
+    ↓
+delete .o only
+
+make fclean
+    ↓
+delete .o
+    ↓
+delete libft.a
+
+make re
+    ↓
+fclean
+    ↓
+all
+    ↓
+rebuild everything
+```
+
+---
+
+# 🧠 Final Mental Model
+
+👉 `clean` → clean workspace
+👉 `fclean` → wipe everything
+👉 `re` → restart from zero
+
+---
+
+# 🎯 One-Line Memory
+
+```text
+clean  = remove parts
+fclean = remove parts + product
+re     = rebuild everything
+```
+
+---
+
+# 📊 Makefile — Full Diagram (Build + Clean Together)
+
+This combines everything you learned so far into one big picture.
+
+---
+
+## 🎬 When you type `make`
+
+```text
+                         ┌───────────────┐
+                         │     make      │
+                         └───────┬───────┘
+                                 │
+                                 ▼
+                         ┌───────────────┐
+                         │      all      │
+                         │   all: NAME   │
+                         └───────┬───────┘
+                                 │
+                                 ▼
+                   ┌──────────────────────────┐
+                   │ Do I have libft.a and is │
+                   │ it up-to-date?           │
+                   └───────────┬──────────────┘
+                               │
+                    yes        │        no
+                     │         │         │
+                     ▼         │         ▼
+              ┌──────────┐     │   ┌──────────────────────────┐
+              │ do       │     │   │ Do I have all .o files   │
+              │ nothing  │     │   │ and are they up-to-date? │
+              └──────────┘     │   └───────────┬──────────────┘
+                               │               │
+                      yes      │      no       │
+                       │       │       │       │
+                       ▼       │       │       ▼
+            ┌────────────────┐ │       │ ┌─────────────────────┐
+            │ ar rcs $(NAME) │ │       │ │ compile .c → .o     │
+            │ $(OBJS)        │ │       │ │ %.o: %.c            │
+            └───────┬────────┘ │       │ │ cc ... -c $< -o $@  │
+                    │          │       │ └──────────┬──────────┘
+                    ▼          │       │            │
+             ┌────────────┐    │       └────────────┘
+             │  libft.a   │◄───┘
+             └────────────┘
+```
+
+---
+
+## 🧹 When you type `make clean`
+
+```text
+make clean
+    │
+    ▼
+clean:
+    rm -f $(OBJS)
+    │
+    ▼
+delete .o files only
+
+Result:
+- .c files stay
+- .o files removed
+- libft.a stays
+```
+
+---
+
+## 💣 When you type `make fclean`
+
+```text
+make fclean
+    │
+    ▼
+fclean: clean
+    rm -f $(NAME)
+    │
+    ▼
+1. delete .o files
+2. delete libft.a
+
+Result:
+- .c files stay
+- .o files removed
+- libft.a removed
+```
+
+---
+
+## 🔄 When you type `make re`
+
+```text
+make re
+    │
+    ▼
+re: fclean all
+    │
+    ├── fclean
+    │     ├── delete .o
+    │     └── delete libft.a
+    │
+    └── all
+          └── rebuild everything
+```
+
+---
+
+## 🧠 Full Story in One Line
+
+```text
+make      = build what is missing
+clean     = remove object files
+fclean    = remove object files + library
+re        = delete everything and rebuild
+```
+
+---
+
+## 🎯 Final Memory Diagram
+
+```text
+.c files  ──compile──▶  .o files  ──archive──▶  libft.a
+   ▲                         │                      │
+   │                         │                      │
+   │                      clean                 fclean
+   │                         │                      │
+   │                         ▼                      ▼
+   └──────────────────── delete .o          delete .o + .a
+
+re = fclean + all
+```
+
+---
+
+## 📌 Tiny memory lines
+
+* `.c → .o → .a`
+* `clean` = remove parts
+* `fclean` = remove parts + final product
+* `re` = restart everything
+
